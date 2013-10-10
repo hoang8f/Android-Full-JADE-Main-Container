@@ -12,6 +12,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
+        <service android:name="jade.android.RuntimeService" />
         <activity
             android:name="info.hoang8f.jade.maincontainer.MainActivity"
             android:label="@string/app_name" >
