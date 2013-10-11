@@ -11,4 +11,12 @@
         android:layout_centerHorizontal="true"
         android:text="Start JADE Main Container" />
 
+    <Button
+        android:id="@+id/btn_agent1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_start_main_container"
+        android:layout_centerHorizontal="true"
+        android:text="Start Agent 1" />
+
 </RelativeLayout>
