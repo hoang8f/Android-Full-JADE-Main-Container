@@ -24,6 +24,8 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
     private Set participants = new SortedSetImpl();
     private Codec codec = new SLCodec();
     private Context context;
+    private static String IP_ADDRESS = "133.19.63.184";
+    private static String AGENT_NAME = "android-agent";
 
     protected void setup() {
         Object[] args = getArguments();
@@ -58,14 +60,14 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
         @Override
         protected void onTick() {
             Log.i(TAG, "###on Tick");
-            ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+            ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
             message.setLanguage(codec.getName());
             String convId = "C-" + myAgent.getLocalName();
             message.setConversationId(convId);
             message.setContent("hello! I am from android mobile");
             AID dummyAid = new AID();
-            dummyAid.setName("da0@192.168.1.123:1099/JADE");
-            dummyAid.addAddresses("http://192.168.1.123:7778/acc");
+            dummyAid.setName(AGENT_NAME +"@" + IP_ADDRESS + ":1099/JADE");
+            dummyAid.addAddresses("http://" + IP_ADDRESS + ":7778/acc");
             message.addReceiver(dummyAid);
             myAgent.send(message);
             Log.i(TAG, "###Send message:" + message.getContent());
@@ -88,14 +90,14 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
 
         public void onStart() {
             // Send message to another Jade agent platform
-            ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+            ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
             message.setLanguage(codec.getName());
             String convId = "C-" + myAgent.getLocalName();
             message.setConversationId(convId);
             message.setContent("hello! I am from android mobile");
             AID dummyAid = new AID();
-            dummyAid.setName("da0@192.168.1.123:1099/JADE");
-            dummyAid.addAddresses("http://192.168.1.123:7778/acc");
+            dummyAid.setName(AGENT_NAME +"@" + IP_ADDRESS + ":1099/JADE");
+            dummyAid.addAddresses("http://" + IP_ADDRESS + ":7778/acc");
             message.addReceiver(dummyAid);
             myAgent.send(message);
             Log.i(TAG, "###Send message:" + message.getContent());
