@@ -38,7 +38,6 @@ public class SendMessageAgent extends Agent implements SimpleAgentInterface {
 
         // Add initial behaviours
         addBehaviour(new SendMessage(this, 3000));
-        addBehaviour(new ParticipantsManager(this));
 
         // Activate the GUI
         registerO2AInterface(SimpleAgentInterface.class, this);
@@ -81,37 +80,6 @@ public class SendMessageAgent extends Agent implements SimpleAgentInterface {
         }
 
     }
-
-    class ParticipantsManager extends CyclicBehaviour {
-        private static final long serialVersionUID = -4845730529175649756L;
-
-        ParticipantsManager(Agent a) {
-            super(a);
-        }
-
-        public void onStart() {
-            //Start cyclic
-        }
-
-        public void action() {
-            // Listening for incomming
-            ACLMessage msg = myAgent.receive();
-            if (msg != null) {
-                try {
-                    //Get message
-                    String message = msg.getContent();
-                    Log.i(TAG, "###Incomming message:" + message);
-                    exportLog("Incomming message:" + message);
-
-                } catch (Exception e) {
-                    Logger.println(e.toString());
-                    e.printStackTrace();
-                }
-            } else {
-                block();
-            }
-        }
-    } // END of inner class ParticipantsManager
 
     public void handleSpoken(String s) {
 

@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import info.hoang8f.jade.agent.ReceivedMessageAgent;
 import info.hoang8f.jade.agent.SendMessageAgent;
 import info.hoang8f.jade.utils.Constants;
 import jade.android.AgentContainerHandler;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private AgentContainerHandler mainContainerHandler;
     private Button btnStart;
     private Button btnAgent1;
+    private Button btnAgent2;
     private SharedPreferences sharedPreferences;
     private TextView logConsole;
     private Handler handler;
@@ -49,6 +51,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         btnStart.setOnClickListener(this);
         btnAgent1 = (Button) findViewById(R.id.btn_agent1);
         btnAgent1.setOnClickListener(this);
+        btnAgent2 = (Button) findViewById(R.id.btn_agent2);
+        btnAgent2.setOnClickListener(this);
         logConsole = (TextView) findViewById(R.id.log_console);
         //Initial share preferences
         sharedPreferences = this.getSharedPreferences(Constants.PREFS_FILE_NAME, Context.MODE_PRIVATE);
@@ -105,7 +109,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 bindService();
                 break;
             case R.id.btn_agent1:
-                createAgent();
+                createAgent("agent1", SendMessageAgent.class.getName());
+                break;
+            case R.id.btn_agent2:
+                createAgent("agent2", ReceivedMessageAgent.class.getName());
                 break;
             default:
                 //Do nothing
@@ -159,9 +166,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    private void createAgent() {
+    private void createAgent(String name, String className) {
         if (mainContainerHandler != null) {
-            mainContainerHandler.createNewAgent("android-agent", SendMessageAgent.class.getName(),
+            mainContainerHandler.createNewAgent(name, className,
                     new Object[]{MainActivity.this}, new RuntimeCallback<AgentHandler>() {
                 @Override
                 public void onSuccess(AgentHandler agentHandler) {

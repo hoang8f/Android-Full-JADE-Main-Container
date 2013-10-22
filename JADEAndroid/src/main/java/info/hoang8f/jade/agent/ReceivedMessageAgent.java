@@ -20,7 +20,7 @@ import jade.util.leap.SortedSetImpl;
 
 public class ReceivedMessageAgent extends Agent implements SimpleAgentInterface {
 
-    private static final String TAG = "SendMessageAgent";
+    private static final String TAG = "ReceivedMessage";
     private static final long serialVersionUID = 1594371294421614291L;
     private Set participants = new SortedSetImpl();
     private Codec codec = new SLCodec();
@@ -37,7 +37,6 @@ public class ReceivedMessageAgent extends Agent implements SimpleAgentInterface 
         }
 
         // Add initial behaviours
-        addBehaviour(new SendMessage(this, 3000));
         addBehaviour(new ParticipantsManager(this));
 
         // Activate the GUI
@@ -55,31 +54,6 @@ public class ReceivedMessageAgent extends Agent implements SimpleAgentInterface 
     }
 
     protected void takeDown() {
-    }
-
-    class SendMessage extends TickerBehaviour {
-
-        public SendMessage(Agent a, long period) {
-            super(a, period);
-        }
-
-        @Override
-        protected void onTick() {
-            Log.i(TAG, "###on Tick");
-            ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
-            message.setLanguage(codec.getName());
-            String convId = "C-" + myAgent.getLocalName();
-            message.setConversationId(convId);
-            message.setContent("hello! I am from android mobile");
-            AID dummyAid = new AID();
-            dummyAid.setName(agentName + "@" + ipAddress + ":1099/JADE");
-            dummyAid.addAddresses("http://" + ipAddress + ":7778/acc");
-            message.addReceiver(dummyAid);
-            myAgent.send(message);
-            Log.i(TAG, "###Send message:" + message.getContent());
-            exportLog("Send message:" + message.getContent());
-        }
-
     }
 
     class ParticipantsManager extends CyclicBehaviour {

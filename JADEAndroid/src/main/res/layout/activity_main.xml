@@ -16,8 +16,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/btn_start_main_container"
-        android:layout_centerHorizontal="true"
-        android:text="Start Agent 1" />
+        android:text="Sending agent" />
+
+    <Button
+        android:id="@+id/btn_agent2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Receiving Agent"
+        android:layout_below="@+id/btn_start_main_container"
+        android:layout_alignParentRight="true" />
 
     <ScrollView
         android:layout_width="match_parent"
