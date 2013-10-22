@@ -19,4 +19,15 @@
         android:layout_centerHorizontal="true"
         android:text="Start Agent 1" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/btn_agent1">
+
+        <TextView
+            android:id="@+id/log_console"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:maxLines="100" />
+    </ScrollView>
 </RelativeLayout>

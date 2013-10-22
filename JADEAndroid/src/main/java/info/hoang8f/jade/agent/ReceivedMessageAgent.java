@@ -2,8 +2,11 @@ package info.hoang8f.jade.agent;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import info.hoang8f.jade.maincontainer.MainActivity;
+import info.hoang8f.jade.utils.Constants;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.core.AID;
@@ -11,21 +14,19 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.util.Logger;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
 
-public class SimpleAgent extends Agent implements SimpleAgentInterface {
+public class ReceivedMessageAgent extends Agent implements SimpleAgentInterface {
 
-    private static final String TAG = "SimpleAgent";
+    private static final String TAG = "SendMessageAgent";
     private static final long serialVersionUID = 1594371294421614291L;
-    private static final String RECEIVER_AGENT_NAME = "da0";
     private Set participants = new SortedSetImpl();
     private Codec codec = new SLCodec();
     private Context context;
-    private static String IP_ADDRESS = "133.19.63.184";
-    private static String AGENT_NAME = "android-agent";
+    private String ipAddress = "133.19.63.184";
+    private String agentName = "android-agent";
 
     protected void setup() {
         Object[] args = getArguments();
@@ -46,11 +47,16 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
         broadcast.setAction("jade.demo.agent.SEND_MESSAGE");
         Log.i(TAG, "###Sending broadcast " + broadcast.getAction());
         context.sendBroadcast(broadcast);
+
+        //Get ipAddress and agentName
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        ipAddress = sharedPreferences.getString(Constants.PREFS_HOST_ADDRESS, ipAddress);
+        agentName = sharedPreferences.getString(Constants.PREFS_AGENT_NAME, agentName);
     }
 
     protected void takeDown() {
     }
-    
+
     class SendMessage extends TickerBehaviour {
 
         public SendMessage(Agent a, long period) {
@@ -66,60 +72,40 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
             message.setConversationId(convId);
             message.setContent("hello! I am from android mobile");
             AID dummyAid = new AID();
-            dummyAid.setName(AGENT_NAME +"@" + IP_ADDRESS + ":1099/JADE");
-            dummyAid.addAddresses("http://" + IP_ADDRESS + ":7778/acc");
+            dummyAid.setName(agentName + "@" + ipAddress + ":1099/JADE");
+            dummyAid.addAddresses("http://" + ipAddress + ":7778/acc");
             message.addReceiver(dummyAid);
             myAgent.send(message);
             Log.i(TAG, "###Send message:" + message.getContent());
+            exportLog("Send message:" + message.getContent());
         }
 
     }
 
-    /**
-     * Inner class ParticipantsManager. This behaviour registers as a chat
-     * participant and keeps the list of participants up to date by managing the
-     * information received from the ChatManager agent.
-     */
     class ParticipantsManager extends CyclicBehaviour {
         private static final long serialVersionUID = -4845730529175649756L;
-        private MessageTemplate template;
 
         ParticipantsManager(Agent a) {
             super(a);
         }
 
         public void onStart() {
-            // Send message to another Jade agent platform
-            ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
-            message.setLanguage(codec.getName());
-            String convId = "C-" + myAgent.getLocalName();
-            message.setConversationId(convId);
-            message.setContent("hello! I am from android mobile");
-            AID dummyAid = new AID();
-            dummyAid.setName(AGENT_NAME +"@" + IP_ADDRESS + ":1099/JADE");
-            dummyAid.addAddresses("http://" + IP_ADDRESS + ":7778/acc");
-            message.addReceiver(dummyAid);
-            myAgent.send(message);
-            Log.i(TAG, "###Send message:" + message.getContent());
-            // Initialize the template used to receive notifications
-            // from the ChatManagerAgent
-            template = MessageTemplate.MatchConversationId(convId);
+            //Start cyclic
         }
 
         public void action() {
-            // Receives information about people joining and leaving
-            // the chat from the ChatManager agent
-            ACLMessage msg = myAgent.receive(template);
+            // Listening for incomming
+            ACLMessage msg = myAgent.receive();
             if (msg != null) {
-                if (msg.getPerformative() == ACLMessage.INFORM) {
-                    try {
+                try {
+                    //Get message
+                    String message = msg.getContent();
+                    Log.i(TAG, "###Incomming message:" + message);
+                    exportLog("Incomming message:" + message);
 
-                    } catch (Exception e) {
-                        Logger.println(e.toString());
-                        e.printStackTrace();
-                    }
-                } else {
-                    handleUnexpected(msg);
+                } catch (Exception e) {
+                    Logger.println(e.toString());
+                    e.printStackTrace();
                 }
             } else {
                 block();
@@ -127,13 +113,8 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
         }
     } // END of inner class ParticipantsManager
 
-
-    // ///////////////////////////////////////
-    // Methods called by the interface
-    // ///////////////////////////////////////
     public void handleSpoken(String s) {
-        // Add a ChatSpeaker behaviour that INFORMs all participants about
-        // the spoken sentence
+
     }
 
     public String[] getParticipantNames() {
@@ -141,12 +122,16 @@ public class SimpleAgent extends Agent implements SimpleAgentInterface {
         return pp;
     }
 
-    // ///////////////////////////////////////
-    // Private utility method
-    // ///////////////////////////////////////
-    private void handleUnexpected(ACLMessage msg) {
-        Log.i(TAG, "###Unexpected message received from " + msg.getSender().getName());
-        Log.i(TAG, "###Content is: " + msg.getContent());
+    public void onHostChanged(String host) {
+        ipAddress = host;
     }
 
+    public void onAgentNameChanged(String name) {
+        agentName = name;
+    }
+
+    private void exportLog(String log) {
+        MainActivity mainActivity = (MainActivity)context;
+        mainActivity.exportLogConsole(log);
+    }
 }

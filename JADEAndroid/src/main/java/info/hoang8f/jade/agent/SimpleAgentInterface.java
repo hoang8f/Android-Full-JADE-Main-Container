@@ -10,4 +10,6 @@ package info.hoang8f.jade.agent;
 public interface SimpleAgentInterface {
 	public void handleSpoken(String s);
 	public String[] getParticipantNames();
+    public void onHostChanged(String host);
+    public void onAgentNameChanged(String name);
 }
