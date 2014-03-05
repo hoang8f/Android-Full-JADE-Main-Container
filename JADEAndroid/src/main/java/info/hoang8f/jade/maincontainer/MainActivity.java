@@ -17,8 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import info.hoang8f.jade.agent.ReceivedMessageAgent;
 import info.hoang8f.jade.agent.SendMessageAgent;
@@ -30,13 +32,13 @@ import jade.android.RuntimeService;
 import jade.android.RuntimeServiceBinder;
 import jade.wrapper.StaleProxyException;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = "MainActivity";
     private RuntimeServiceBinder runtimeServiceBinder;
-    private ServiceConnection serviceConnection;
+    private ServiceConnection mServiceConnection;
     private AgentContainerHandler mainContainerHandler;
-    private Button btnStart;
+    private ToggleButton btnStart;
     private Button btnAgent1;
     private Button btnAgent2;
     private SharedPreferences sharedPreferences;
@@ -47,8 +49,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnStart = (Button) findViewById(R.id.btn_start_main_container);
-        btnStart.setOnClickListener(this);
+        btnStart = (ToggleButton) findViewById(R.id.btn_start_main_container);
+        btnStart.setOnCheckedChangeListener(this);
         btnAgent1 = (Button) findViewById(R.id.btn_agent1);
         btnAgent1.setOnClickListener(this);
         btnAgent2 = (Button) findViewById(R.id.btn_agent2);
@@ -105,9 +107,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_start_main_container:
-                bindService();
-                break;
             case R.id.btn_agent1:
                 createAgent("agent1", SendMessageAgent.class.getName());
                 break;
@@ -126,7 +125,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         //Check runtime service
         if (runtimeServiceBinder == null) {
             //Create Runtime Service Binder here
-            serviceConnection = new ServiceConnection() {
+            mServiceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder service) {
                     runtimeServiceBinder = (RuntimeServiceBinder) service;
@@ -140,7 +139,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
             };
             Log.i(TAG, "###Binding Gateway to RuntimeService...");
-            bindService(new Intent(getApplicationContext(), RuntimeService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+            bindService(new Intent(getApplicationContext(), RuntimeService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
         } else {
             startMainContainer();
         }
@@ -154,7 +153,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Log.i(TAG, "###Main-Container created...");
                 exportLogConsole("Main-Container created...");
                 Log.i(TAG, "###Container:" + agentContainerHandler.getAgentContainer().getName());
-                btnStart.setEnabled(false);
                 Log.i(TAG, "###mainContainerHandler:" + mainContainerHandler);
             }
 
@@ -198,4 +196,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         handler.sendMessage(logMessage);
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            bindService();
+        } else {
+            unbindService(mServiceConnection);
+        }
+    }
 }
