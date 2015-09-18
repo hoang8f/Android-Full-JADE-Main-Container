@@ -65,6 +65,10 @@ public class SendMessageAgent extends Agent implements SimpleAgentInterface {
         @Override
         protected void onTick() {
             Log.i(TAG, "###on Tick");
+            sendDummyMessage();
+        }
+
+        private void sendDummyMessage() {
             ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
             message.setLanguage(codec.getName());
             String convId = "C-" + myAgent.getLocalName();

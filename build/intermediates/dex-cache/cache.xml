@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/hoang8f/Desktop/project/05.My Projects/Android/Android-Full-JADE-Main-Container/libs/JadeAndroid.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f403ee4fd5e590d44b88c36ef2c6bf54ec1eced5">
+        <dex dex="/Users/hoang8f/Desktop/project/05.My Projects/Android/Android-Full-JADE-Main-Container/JADEAndroid/build/intermediates/pre-dexed/debug/JadeAndroid-d2451af639568f021d2ceb09cedd819d1f41b842.jar" />
+    </item>
+
+</items>
